@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { addTaskApiAction, checkTaskApiAction, getTaskListApiAction, rejectTaskApiAction, removeTaskApiAction } from '../redux/actions/ToDoListActions'
 export default function ToDoListRedux(props) {
+    const dispatch = useDispatch()
     const { taskList } = useSelector(state => state.ToDoListReducer)
     const [state, setState] = useState({
         value: {
@@ -10,15 +12,20 @@ export default function ToDoListRedux(props) {
             taskName: ''
         }
     })
+
+        
+
     const renderTaskToDo = () => {
         return taskList.filter(item => !item.status).map((item, index) => {
             return <li key={index}>
                 <span>{item.taskName}</span>
                 <div className="buttons">
-                    <button className="remove" onClick={() =>{}}>
+                    <button className="remove" onClick={() =>{
+                        dispatch(removeTaskApiAction(item.taskName))
+                    }}>
                         <i className="fa fa-trash-alt" />
                     </button>
-                    <button className="complete" onClick={() => {}} >
+                    <button className="complete" onClick={() => {dispatch(checkTaskApiAction(item.taskName))}} >
                         <i className="far fa-check-circle" />
                         <i className="fas fa-check-circle" />
                     </button>
@@ -32,10 +39,10 @@ export default function ToDoListRedux(props) {
             return <li key={index}>
                 <span>{item.taskName}</span>
                 <div className="buttons">
-                    <button className="remove" onClick={() => {}} >
-                        <i className="fa fa-trash-alt" />
+                    <button className="remove" onClick={() => {dispatch(removeTaskApiAction(item.taskName))}} >
+                        <i className="fa fa-trash-alt"  />
                     </button>
-                    <button className="complete" onClick={() =>{}}>
+                    <button className="complete" onClick={() =>{dispatch(rejectTaskApiAction(item.taskName))}}>
                         <i className="far fa-check-circle" />
                         <i className="fas fa-check-circle" />
                     </button>
@@ -63,12 +70,16 @@ export default function ToDoListRedux(props) {
         })
     }
     useEffect(() => {
-        
+        dispatch(getTaskListApiAction())
     }, [])
+    const addTask = (e) =>{
+        e.preventDefault();
+        dispatch(addTaskApiAction(state.value.taskName))
+    } 
     return (
        
             <div>
-                <form onSubmit={(e) => {}}>
+                <form onSubmit={(e) => {addTask(e)}}>
                     <div className="card">
                         <div className="card__header">
                             <img src={'./bg.png'} />
